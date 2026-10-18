@@ -1,8 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import vehicleRoutes from './routes/vehicleRoutes.js';
@@ -10,19 +8,11 @@ import bookingRoutes from './routes/bookingRoutes.js';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/vehicles', vehicleRoutes);
-app.use('/api/bookings', bookingRoutes);
 
 // Root and Health routes
 app.get('/', (req, res) => {
@@ -41,15 +31,15 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'API is running healthy' });
 });
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  const frontendDistPath = path.resolve(__dirname, '../../frontend/dist');
-  app.use(express.static(frontendDistPath));
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/bookings', bookingRoutes);
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(frontendDistPath, 'index.html'));
-  });
-}
+// 404 Handler for unknown routes
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
 
 const PORT = process.env.PORT || 5000;
 
