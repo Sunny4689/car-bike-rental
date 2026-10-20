@@ -25,3 +25,8 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Documentation & Project Report
+PROJECT_REPORT.md
+*.docx
+*.pdf
